@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket</title>
+</head>
+<body>
+    <h1>Chat Room</h1>
+    <input type="text" id="send-text" />
+    <button id="send-btn">发送</button>
+
+    <script type="text/javascript">
+        // 获取 websocket 实例，ws://echo.websocket.org 是别人的一个 websocket 服务
+        let ws = new WebSocket("ws://localhost:8001/")
+        /**
+         * onopen, onclose, onmessage 都是 ws 的回调函数
+         * send 是发送函数
+         */
+        ws.onopen = function () {
+          console.log('websocket open');
+          document.getElementById('send-btn').onclick = function () {
+            let txt = document.getElementById('send-text').value;
+            if (txt) {
+              ws.send(txt);
+            }
+          }
+        };
+        ws.onclose = function () {
+            console.log('websocket close');
+        };
+        ws.onmessage = function (e) {
+            console.log(e.data);
+            let mes = JSON.parse(e.data);
+            showMessage(mes.data, mes.type);
+        };
+
+        // 展示信息
+        function showMessage(str, type) {
+            let div = document.createElement('div');
+            div.innerHTML = str;
+            if (type === 'enter') {
+              div.style.color = 'blue';
+            } else if (type === 'quit') {
+              div.style.color = 'red';
+            }
+            document.body.appendChild(div);
+        }
+
+    </script>
+</body>
+</html>
